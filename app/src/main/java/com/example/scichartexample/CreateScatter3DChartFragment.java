@@ -3,6 +3,7 @@ package com.example.scichartexample;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -11,11 +12,16 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.scichart.charting3d.model.dataSeries.xyz.XyzDataSeries3D;
+import com.scichart.charting3d.modifiers.CrosshairMode;
+import com.scichart.charting3d.modifiers.IChartModifier3D;
 import com.scichart.charting3d.modifiers.ModifierGroup3D;
+import com.scichart.charting3d.modifiers.TooltipModifier3D;
+import com.scichart.charting3d.modifiers.VertexSelectionModifier3D;
 import com.scichart.charting3d.visuals.SciChartSurface3D;
 import com.scichart.charting3d.visuals.axes.NumericAxis3D;
 import com.scichart.charting3d.visuals.camera.Camera3D;
 import com.scichart.charting3d.visuals.pointMarkers.SpherePointMarker3D;
+import com.scichart.charting3d.visuals.renderableSeries.metadataProviders.DefaultSelectableMetadataProvider3D;
 import com.scichart.charting3d.visuals.renderableSeries.metadataProviders.PointMetadataProvider3D;
 import com.scichart.charting3d.visuals.renderableSeries.scatter.ScatterRenderableSeries3D;
 import com.scichart.core.framework.UpdateSuspender;
@@ -45,9 +51,9 @@ public class CreateScatter3DChartFragment extends Fragment {
     protected void initExample() {
         final Camera3D camera = sciChart3DBuilder.newCamera3D().build();
 
-        final NumericAxis3D xAxis = sciChart3DBuilder.newNumericAxis3D().withGrowBy(.1, .1).build();
-        final NumericAxis3D yAxis = sciChart3DBuilder.newNumericAxis3D().withGrowBy(.1, .1).build();
-        final NumericAxis3D zAxis = sciChart3DBuilder.newNumericAxis3D().withGrowBy(.1, .1).build();
+        final NumericAxis3D xAxis = sciChart3DBuilder.newNumericAxis3D().withGrowBy(.2, .2).build();
+        final NumericAxis3D yAxis = sciChart3DBuilder.newNumericAxis3D().withGrowBy(.05, .05).build();
+        final NumericAxis3D zAxis = sciChart3DBuilder.newNumericAxis3D().withGrowBy(.2, .2).build();
 //        final XyzDataSeries3D<Double, Double, Double> dataSeries = new XyzDataSeries3D<>(Double.class, Double.class, Double.class);
 //        for (int i = 0; i < 5; i++) {
 //            final double x = i;
@@ -103,30 +109,32 @@ public class CreateScatter3DChartFragment extends Fragment {
 
         final SpherePointMarker3D pointMarker = sciChart3DBuilder.newSpherePointMarker3D()
                 .withFill(ColorUtil.LimeGreen)
-                .withSize(2f)
+                .withSize(80f)
                 .build();
         final ScatterRenderableSeries3D rs = sciChart3DBuilder.newScatterSeries3D()
                 .withDataSeries(xyzDataSeries3D)
                 .withPointMarker(pointMarker)
-                .withMetadataProvider(metadataProvider)
+                .withMetadataProvider(new DefaultSelectableMetadataProvider3D())
                 .build();
-        UpdateSuspender.using(surface3d, new Runnable() {
-            @Override
-            public void run() {
-                surface3d.setCamera(camera);
-                surface3d.setXAxis(xAxis);
-                surface3d.setYAxis(yAxis);
-                surface3d.setZAxis(zAxis);
-                surface3d.getRenderableSeries().add(rs);
-            }
+        UpdateSuspender.using(surface3d, () -> {
+            surface3d.setCamera(camera);
+
+            surface3d.setXAxis(xAxis);
+            surface3d.setYAxis(yAxis);
+            surface3d.setZAxis(zAxis);
+
+            surface3d.getRenderableSeries().add(rs);
+
+            surface3d.getChartModifiers().add(sciChart3DBuilder.newModifierGroup()
+                    .withVertexSelectionModifier().withReceiveHandledEvents(callBack()).build()
+                    .withPinchZoomModifier3D().build()
+                    .withOrbitModifier3D().withReceiveHandledEvents(callBack()).build()
+                    .withZoomExtentsModifier3D().build()
+                    .build());
         });
-
-        final ModifierGroup3D modifierGroup3D = sciChart3DBuilder.newModifierGroup()
-                .withPinchZoomModifier3D().build()
-                .withOrbitModifier3D().withReceiveHandledEvents(true).build()
-                .withZoomExtentsModifier3D().build()
-                .build();
-
-        surface3d.getChartModifiers().add(modifierGroup3D);
+    }
+    private boolean callBack() {
+        System.out.println("event1");
+        return true;
     }
 }

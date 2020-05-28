@@ -7,6 +7,6 @@
     <com.scichart.charting3d.visuals.SciChartSurface3D
         android:id="@+id/chart3d"
         android:layout_height="fill_parent"
-        android:layout_width="fill_parent" />
+        android:layout_width="fill_parent"/>
 
 </LinearLayout>
