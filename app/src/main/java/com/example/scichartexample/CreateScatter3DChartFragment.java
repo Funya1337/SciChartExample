@@ -15,6 +15,7 @@ import com.scichart.charting3d.model.dataSeries.xyz.XyzDataSeries3D;
 import com.scichart.charting3d.modifiers.CrosshairMode;
 import com.scichart.charting3d.modifiers.IChartModifier3D;
 import com.scichart.charting3d.modifiers.ModifierGroup3D;
+import com.scichart.charting3d.modifiers.OrbitModifier3D;
 import com.scichart.charting3d.modifiers.TooltipModifier3D;
 import com.scichart.charting3d.modifiers.VertexSelectionModifier3D;
 import com.scichart.charting3d.visuals.SciChartSurface3D;
@@ -50,50 +51,15 @@ public class CreateScatter3DChartFragment extends Fragment {
 
     protected void initExample() {
         final Camera3D camera = sciChart3DBuilder.newCamera3D().build();
+//        surface3d.setIsAxisCubeVisible(false);
 
         final NumericAxis3D xAxis = sciChart3DBuilder.newNumericAxis3D().withGrowBy(.2, .2).build();
         final NumericAxis3D yAxis = sciChart3DBuilder.newNumericAxis3D().withGrowBy(.05, .05).build();
         final NumericAxis3D zAxis = sciChart3DBuilder.newNumericAxis3D().withGrowBy(.2, .2).build();
-//        final XyzDataSeries3D<Double, Double, Double> dataSeries = new XyzDataSeries3D<>(Double.class, Double.class, Double.class);
-//        for (int i = 0; i < 5; i++) {
-//            final double x = i;
-//            final double y = i;
-//            final double z = i;
-//            dataSeries.append(x, y, z);
-//        }
-//        final EllipsePointMarker3D pointMarker3D = sciChart3DBuilder.newEllipsePointMarker3D()
-//                .withFill(ColorUtil.LimeGreen)
-//                .withSize(2f)
-//                .build();
-//        final ScatterRenderableSeries3D rs = sciChart3DBuilder.newScatterSeries3D()
-//                .withDataSeries(dataSeries)
-//                .withPointMarker(pointMarker3D)
-//                .build();
-//        surface3d.setCamera(camera);
-//        surface3d.setXAxis(xAxis);
-//        surface3d.setYAxis(yAxis);
-//        surface3d.setZAxis(zAxis);
-//        surface3d.getRenderableSeries().add(rs);
-//        surface3d.getChartModifiers().add(sciChart3DBuilder.newModifierGroupWithDefaultModifiers().build());
-//
-//        final ModifierGroup3D modifierGroup3D = sciChart3DBuilder.newModifierGroup()
-//                .withPinchZoomModifier3D().build()
-//                .withOrbitModifier3D().withReceiveHandledEvents(true).build()
-//                .withZoomExtentsModifier3D().build()
-//                .build();
-//
-//        surface3d.getChartModifiers().add(modifierGroup3D);
+
         final XyzDataSeries3D<Double, Double, Double> xyzDataSeries3D = new XyzDataSeries3D<>(Double.class, Double.class, Double.class);
         final PointMetadataProvider3D metadataProvider = new PointMetadataProvider3D();
         final ArrayList<PointMetadataProvider3D.PointMetadata3D> medatata = metadataProvider.metadata;
-
-//        final double x = 1.0;
-//        final double y = 2.0;
-//        final double z = 3.0;
-//        xyzDataSeries3D.append(x, y, z);
-//        final int color = Color.parseColor("#FF0000");
-//        final float scale = 10;
-//        medatata.add(new PointMetadataProvider3D.PointMetadata3D(color, scale));
 
         for (int i=0; i<3; i++) {
             for (int j=0; j<3; j++) {
@@ -111,11 +77,11 @@ public class CreateScatter3DChartFragment extends Fragment {
                 .withFill(ColorUtil.LimeGreen)
                 .withSize(80f)
                 .build();
-        final ScatterRenderableSeries3D rs = sciChart3DBuilder.newScatterSeries3D()
-                .withDataSeries(xyzDataSeries3D)
-                .withPointMarker(pointMarker)
-                .withMetadataProvider(new DefaultSelectableMetadataProvider3D())
-                .build();
+
+        MyScatterRenderableSeries3D rs = new MyScatterRenderableSeries3D();
+        rs.setDataSeries(xyzDataSeries3D);
+        rs.setPointMarker(pointMarker);
+        rs.setMetadataProvider(new DefaultSelectableMetadataProvider3D());
         UpdateSuspender.using(surface3d, () -> {
             surface3d.setCamera(camera);
 
@@ -125,12 +91,18 @@ public class CreateScatter3DChartFragment extends Fragment {
 
             surface3d.getRenderableSeries().add(rs);
 
-            surface3d.getChartModifiers().add(sciChart3DBuilder.newModifierGroup()
-                    .withVertexSelectionModifier().withReceiveHandledEvents(callBack()).build()
-                    .withPinchZoomModifier3D().build()
-                    .withOrbitModifier3D().withReceiveHandledEvents(callBack()).build()
-                    .withZoomExtentsModifier3D().build()
-                    .build());
+            VertexSelectionModifier3D selectModifier = new MyVertexSelectionModifier3D();
+            selectModifier.setReceiveHandledEvents(true);
+            OrbitModifier3D orbitModifier = new OrbitModifier3D();
+            orbitModifier.setReceiveHandledEvents(true);
+
+//            boolean modifier = sciChart3DBuilder.newModifierGroup()
+//                    .withVertexSelectionModifier().withReceiveHandledEvents(true).build()
+//                    .withPinchZoomModifier3D().build()
+//                    .withOrbitModifier3D().withReceiveHandledEvents(true).build()
+//                    .withZoomExtentsModifier3D().build()
+//                    .build();
+            surface3d.getChartModifiers().add(new ModifierGroup3D(selectModifier, orbitModifier));
         });
     }
     private boolean callBack() {
