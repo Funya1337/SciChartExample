@@ -51,37 +51,49 @@ public class CreateScatter3DChartFragment extends Fragment {
 
     protected void initExample() {
         final Camera3D camera = sciChart3DBuilder.newCamera3D().build();
-//        surface3d.setIsAxisCubeVisible(false);
+        surface3d.setIsAxisCubeVisible(false);
 
         final NumericAxis3D xAxis = sciChart3DBuilder.newNumericAxis3D().withGrowBy(.2, .2).build();
         final NumericAxis3D yAxis = sciChart3DBuilder.newNumericAxis3D().withGrowBy(.05, .05).build();
         final NumericAxis3D zAxis = sciChart3DBuilder.newNumericAxis3D().withGrowBy(.2, .2).build();
 
-        final XyzDataSeries3D<Double, Double, Double> xyzDataSeries3D = new XyzDataSeries3D<>(Double.class, Double.class, Double.class);
-        final PointMetadataProvider3D metadataProvider = new PointMetadataProvider3D();
-        final ArrayList<PointMetadataProvider3D.PointMetadata3D> medatata = metadataProvider.metadata;
+        final XyzDataSeries3D<Double, Double, Double> emptyDataSeries = new XyzDataSeries3D<>(Double.class, Double.class, Double.class);
+        final XyzDataSeries3D<Double, Double, Double> firstPlayerDataSeries = new XyzDataSeries3D<>(Double.class, Double.class, Double.class);
+        final XyzDataSeries3D<Double, Double, Double> secondPlayerDataSeries = new XyzDataSeries3D<>(Double.class, Double.class, Double.class);
 
         for (int i=0; i<3; i++) {
             for (int j=0; j<3; j++) {
                 for (int k=0; k<3; k++) {
-                    xyzDataSeries3D.append((double)i, (double)j, (double)k);
-                    final int color = Color.parseColor("#00FF00");
-                    final float scale = 40;
-                    medatata.add(new PointMetadataProvider3D.PointMetadata3D(color, scale));
+                    emptyDataSeries.append((double)i, (double)j, (double)k);
                 }
             }
         }
 
-
-        final SpherePointMarker3D pointMarker = sciChart3DBuilder.newSpherePointMarker3D()
-                .withFill(ColorUtil.LimeGreen)
+        final SpherePointMarker3D emptyPointMarker = sciChart3DBuilder.newSpherePointMarker3D()
+                .withFill(ColorUtil.White)
+                .withSize(80f)
+                .build();
+        final SpherePointMarker3D firstPlayerPointMarker = sciChart3DBuilder.newSpherePointMarker3D()
+                .withFill(Color.parseColor("#EDF67D"))
+                .withSize(80f)
+                .build();
+        final SpherePointMarker3D secondPlayerPointMarker = sciChart3DBuilder.newSpherePointMarker3D()
+                .withFill(Color.parseColor("#F896D8"))
                 .withSize(80f)
                 .build();
 
-        MyScatterRenderableSeries3D rs = new MyScatterRenderableSeries3D();
-        rs.setDataSeries(xyzDataSeries3D);
-        rs.setPointMarker(pointMarker);
-        rs.setMetadataProvider(new DefaultSelectableMetadataProvider3D());
+        MyScatterRenderableSeries3D emptyRs = new MyScatterRenderableSeries3D(emptyDataSeries, firstPlayerDataSeries, secondPlayerDataSeries);
+        MyScatterRenderableSeries3D firstPlayerRs = new MyScatterRenderableSeries3D(emptyDataSeries, firstPlayerDataSeries, secondPlayerDataSeries);
+        MyScatterRenderableSeries3D secondPlayerRs = new MyScatterRenderableSeries3D(emptyDataSeries, firstPlayerDataSeries, secondPlayerDataSeries);
+        emptyRs.setDataSeries(emptyDataSeries);
+        firstPlayerRs.setDataSeries(firstPlayerDataSeries);
+        secondPlayerRs.setDataSeries(secondPlayerDataSeries);
+        emptyRs.setPointMarker(emptyPointMarker);
+        firstPlayerRs.setPointMarker(firstPlayerPointMarker);
+        secondPlayerRs.setPointMarker(secondPlayerPointMarker);
+        emptyRs.setMetadataProvider(new DefaultSelectableMetadataProvider3D());
+        firstPlayerRs.setMetadataProvider(new DefaultSelectableMetadataProvider3D());
+        secondPlayerRs.setMetadataProvider(new DefaultSelectableMetadataProvider3D());
         UpdateSuspender.using(surface3d, () -> {
             surface3d.setCamera(camera);
 
@@ -89,7 +101,9 @@ public class CreateScatter3DChartFragment extends Fragment {
             surface3d.setYAxis(yAxis);
             surface3d.setZAxis(zAxis);
 
-            surface3d.getRenderableSeries().add(rs);
+            surface3d.getRenderableSeries().add(emptyRs);
+            surface3d.getRenderableSeries().add(firstPlayerRs);
+            surface3d.getRenderableSeries().add(secondPlayerRs);
 
             VertexSelectionModifier3D selectModifier = new MyVertexSelectionModifier3D();
             selectModifier.setReceiveHandledEvents(true);
@@ -104,9 +118,5 @@ public class CreateScatter3DChartFragment extends Fragment {
 //                    .build();
             surface3d.getChartModifiers().add(new ModifierGroup3D(selectModifier, orbitModifier));
         });
-    }
-    private boolean callBack() {
-        System.out.println("event1");
-        return true;
     }
 }

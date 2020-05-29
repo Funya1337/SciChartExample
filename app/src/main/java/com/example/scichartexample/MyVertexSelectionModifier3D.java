@@ -3,6 +3,7 @@ package com.example.scichartexample;
 import android.view.MotionEvent;
 
 import com.scichart.charting.visuals.renderableSeries.IRenderableSeriesCore;
+import com.scichart.charting3d.model.dataSeries.xyz.XyzDataSeries3D;
 import com.scichart.charting3d.modifiers.VertexSelectionModifier3D;
 import com.scichart.core.observable.CollectionChangedEventArgs;
 import com.scichart.core.utility.touch.ModifierTouchEventArgs;
