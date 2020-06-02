@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     android:id="@+id/chart_layout"
     tools:context=".MainActivity"
+    android:hardwareAccelerated="false"
     android:orientation="vertical">
     <FrameLayout
         android:id="@+id/frameContainer"

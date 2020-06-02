@@ -1,18 +1,22 @@
 package com.example.scichartexample;
 
+import android.util.Log;
+
 import com.scichart.charting3d.model.dataSeries.xyz.XyzDataSeries3D;
 import com.scichart.charting3d.visuals.renderableSeries.hitTest.HitTestInfo3D;
 import com.scichart.charting3d.visuals.renderableSeries.scatter.ScatterRenderableSeries3D;
 
-public class MyScatterRenderableSeries3D extends ScatterRenderableSeries3D {
+public class EmptyScatterRenderableSeries3D extends ScatterRenderableSeries3D {
 
     XyzDataSeries3D<Double, Double, Double> emptyDataSeries;
     XyzDataSeries3D<Double, Double, Double> firstPlayerDataSeries;
     XyzDataSeries3D<Double, Double, Double> secondPlayerDataSeries;
+    Game game = new Game();
+    private static final String TAG = "MainTagName";
     private double x, y, z;
     private boolean checker = true;
 
-    public MyScatterRenderableSeries3D(XyzDataSeries3D<Double, Double, Double> emptyDataSeries, XyzDataSeries3D<Double, Double, Double> firstPlayerDataSeries, XyzDataSeries3D<Double, Double, Double> secondPlayerDataSeries) {
+    public EmptyScatterRenderableSeries3D(XyzDataSeries3D<Double, Double, Double> emptyDataSeries, XyzDataSeries3D<Double, Double, Double> firstPlayerDataSeries, XyzDataSeries3D<Double, Double, Double> secondPlayerDataSeries) {
         this.emptyDataSeries = emptyDataSeries;
         this.firstPlayerDataSeries = firstPlayerDataSeries;
         this.secondPlayerDataSeries = secondPlayerDataSeries;
@@ -35,10 +39,17 @@ public class MyScatterRenderableSeries3D extends ScatterRenderableSeries3D {
         y = Integer.parseInt(String.valueOf(str.charAt(1)));
         z = Integer.parseInt(String.valueOf(str.charAt(2)));
         emptyDataSeries.updateXAt(hitTestInfo3D.vertexId, 10000d);
-        if (checker)
+        if (checker) {
             firstPlayerDataSeries.append(x, y, z);
-        else
+            game.setElement((int)x, (int)y, (int)z, ElState.X);
+        } else {
             secondPlayerDataSeries.append(x, y, z);
+            game.setElement((int)x, (int)y, (int)z, ElState.O);
+        }
+//        Log.d(TAG, (int)x + " " + (int)y + " " + (int)z);
+//        game.checkRowAndColumn2();
+        Log.d(TAG, game.checkCol1() + "");
+//        game.print();
     }
     public long asBase3(int num) {
         long ret = 0, factor = 1;

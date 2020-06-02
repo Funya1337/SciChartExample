@@ -3,7 +3,6 @@ package com.example.scichartexample;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -12,24 +11,18 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.scichart.charting3d.model.dataSeries.xyz.XyzDataSeries3D;
-import com.scichart.charting3d.modifiers.CrosshairMode;
-import com.scichart.charting3d.modifiers.IChartModifier3D;
 import com.scichart.charting3d.modifiers.ModifierGroup3D;
 import com.scichart.charting3d.modifiers.OrbitModifier3D;
-import com.scichart.charting3d.modifiers.TooltipModifier3D;
 import com.scichart.charting3d.modifiers.VertexSelectionModifier3D;
 import com.scichart.charting3d.visuals.SciChartSurface3D;
 import com.scichart.charting3d.visuals.axes.NumericAxis3D;
 import com.scichart.charting3d.visuals.camera.Camera3D;
 import com.scichart.charting3d.visuals.pointMarkers.SpherePointMarker3D;
 import com.scichart.charting3d.visuals.renderableSeries.metadataProviders.DefaultSelectableMetadataProvider3D;
-import com.scichart.charting3d.visuals.renderableSeries.metadataProviders.PointMetadataProvider3D;
 import com.scichart.charting3d.visuals.renderableSeries.scatter.ScatterRenderableSeries3D;
 import com.scichart.core.framework.UpdateSuspender;
 import com.scichart.drawing.utility.ColorUtil;
 import com.scichart.extensions3d.builders.SciChart3DBuilder;
-
-import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -82,9 +75,9 @@ public class CreateScatter3DChartFragment extends Fragment {
                 .withSize(80f)
                 .build();
 
-        MyScatterRenderableSeries3D emptyRs = new MyScatterRenderableSeries3D(emptyDataSeries, firstPlayerDataSeries, secondPlayerDataSeries);
-        MyScatterRenderableSeries3D firstPlayerRs = new MyScatterRenderableSeries3D(emptyDataSeries, firstPlayerDataSeries, secondPlayerDataSeries);
-        MyScatterRenderableSeries3D secondPlayerRs = new MyScatterRenderableSeries3D(emptyDataSeries, firstPlayerDataSeries, secondPlayerDataSeries);
+        EmptyScatterRenderableSeries3D emptyRs = new EmptyScatterRenderableSeries3D(emptyDataSeries, firstPlayerDataSeries, secondPlayerDataSeries);
+        ScatterRenderableSeries3D firstPlayerRs = new ScatterRenderableSeries3D();
+        ScatterRenderableSeries3D secondPlayerRs = new ScatterRenderableSeries3D();
         emptyRs.setDataSeries(emptyDataSeries);
         firstPlayerRs.setDataSeries(firstPlayerDataSeries);
         secondPlayerRs.setDataSeries(secondPlayerDataSeries);
@@ -92,8 +85,6 @@ public class CreateScatter3DChartFragment extends Fragment {
         firstPlayerRs.setPointMarker(firstPlayerPointMarker);
         secondPlayerRs.setPointMarker(secondPlayerPointMarker);
         emptyRs.setMetadataProvider(new DefaultSelectableMetadataProvider3D());
-        firstPlayerRs.setMetadataProvider(new DefaultSelectableMetadataProvider3D());
-        secondPlayerRs.setMetadataProvider(new DefaultSelectableMetadataProvider3D());
         UpdateSuspender.using(surface3d, () -> {
             surface3d.setCamera(camera);
 
