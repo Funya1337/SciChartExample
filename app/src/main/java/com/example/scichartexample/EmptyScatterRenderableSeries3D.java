@@ -1,5 +1,6 @@
 package com.example.scichartexample;
 
+import android.content.Intent;
 import android.util.Log;
 
 import com.scichart.charting3d.model.dataSeries.xyz.XyzDataSeries3D;
@@ -46,10 +47,21 @@ public class EmptyScatterRenderableSeries3D extends ScatterRenderableSeries3D {
             secondPlayerDataSeries.append(x, y, z);
             game.setElement((int)x, (int)y, (int)z, ElState.O);
         }
-//        Log.d(TAG, (int)x + " " + (int)y + " " + (int)z);
-//        game.checkRowAndColumn2();
-        Log.d(TAG, game.checkCol1() + "");
-//        game.print();
+        Log.d(TAG, (int)x + " " + (int)y + " " + (int)z);
+        if (game.checkCol1() == ElState.X || game.checkCol2() == ElState.X || game.checkRow1() == ElState.X ||
+                game.checkRow2() == ElState.X || game.checkDiag1() == ElState.X || game.checkDiag2() == ElState.X
+                || game.checkDiag3() == ElState.X || game.checkDiag4() == ElState.X) {
+            Intent intent = new Intent(getContext(), WinnerActivity.class);
+            intent.putExtra("data", 1);
+            getContext().startActivity(intent);
+        }
+        else if (game.checkCol1() == ElState.O|| game.checkCol2() == ElState.O || game.checkRow1() == ElState.O ||
+                game.checkRow2() == ElState.O || game.checkDiag1() == ElState.O || game.checkDiag2() == ElState.O
+                || game.checkDiag3() == ElState.O || game.checkDiag4() == ElState.O) {
+            Intent intent = new Intent(getContext(), WinnerActivity.class);
+            intent.putExtra("data", 0);
+            getContext().startActivity(intent);
+        }
     }
     public long asBase3(int num) {
         long ret = 0, factor = 1;
